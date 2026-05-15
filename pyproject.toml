@@ -1,0 +1,20 @@
+[project]
+name = "uas-tweet-jaringan"
+version = "0.1.0"
+description = "Sentimen Analisis Kepuasan Pengguna Penyedia Telekomunikasi Seluler Indonesia Menggunakan Algoritma/Metode Logistic Regression dan Lexicon Based Features"
+readme = "README.md"
+requires-python = ">=3.11, <3.14"
+dependencies = [
+    "ipykernel>=7.2.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.9",
+    "nltk>=3.9.4",
+    "numpy>=2.4.4",
+    "pandas>=3.0.2",
+    "pysastrawi>=1.2.0",
+    "python-dotenv>=1.2.2",
+    "scikit-learn>=1.8.0",
+    "scipy>=1.17.1",
+    "seaborn>=0.13.2",
+    "tqdm>=4.67.3",
+]

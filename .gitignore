@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+accounts.db
+accounts.txt
+data/processed
+*.ipynb_checkpoints/
+results/
+.python-version
+report/
