@@ -23,9 +23,14 @@ def load_provider(provider: str) -> pd.DataFrame:
     lengths.sort(key=lambda x: x[1], reverse=True)
     
     col1 = lengths[0][0]
-    col2 = lengths[1][0] if len(lengths) > 1 else col1
+    df = df.rename(columns={col1: 'tweet_part1'})
     
-    df = df.rename(columns={col1: 'tweet_part1', col2: 'tweet_part2'})
+    if len(lengths) > 1:
+        col2 = lengths[1][0]
+        df = df.rename(columns={col2: 'tweet_part2'})
+    else:
+        df['tweet_part2'] = ''
+        
     df['provider'] = provider
     
     return df[['provider', 'tweet_part1', 'tweet_part2']]
