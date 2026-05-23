@@ -13,9 +13,3 @@ LR_PARAMS    = {"solver": "lbfgs", "max_iter": 1000, "random_state": RANDOM_STAT
 TUNING_C     = [0.01, 0.1, 1, 10, 100]
 
 PROVIDERS = ["indosat", "telkomsel", "xl"]
-
-TWITTER_STOPWORDS = [
-    "rt", "yg", "dg", "dgn", "nya", "kak", "gan",
-    "bgt", "banget", "aja", "udah", "udh", "gw",
-    "gue", "lo", "lu", "nih", "sih", "dong", "deh"
-]

@@ -2,19 +2,20 @@ import pandas as pd
 from src.config import LEXICON
 
 def load_lexicon() -> tuple[set[str], set[str]]:
-    """Load positive_words.txt and negative_words.txt as sets."""
-    def extract_word(line):
-        parts = line.strip().split('\t')
-        return parts[0].strip().lower() if parts else ""
+    pos_words: set[str] = set()
+    with (open(LEXICON / "positive_words.txt", "r", encoding="utf-8", errors="replace") as f):
+        for line in f:
+            w = line.strip().split('\t')[0]
+            if w and w.lower() != "word":
+                pos_words.add(w.lower())
 
-    with open(LEXICON / "positive_words.txt", "r", encoding="utf-8", errors="replace") as f:
-        next(f, None) # skip header
-        pos_words = set(extract_word(line) for line in f if line.strip())
+    neg_words: set[str] = set()
+    with (open(LEXICON / "negative_words.txt", "r", encoding="utf-8", errors="replace") as f):
+        for line in f:
+            w = line.strip().split('\t')[0]
+            if w and w.lower() != "word":
+                neg_words.add(w.lower())
 
-    with open(LEXICON / "negative_words.txt", "r", encoding="utf-8", errors="replace") as f:
-        next(f, None) # skip header
-        neg_words = set(extract_word(line) for line in f if line.strip())
-        
     return pos_words, neg_words
 
 def count_sentiment_words(text: str, pos_words: set[str], neg_words: set[str]) -> tuple[int, int]:
@@ -36,7 +37,8 @@ def run_labeling(df: pd.DataFrame) -> pd.DataFrame:
         pos, neg = count_sentiment_words(str(text), pos_words, neg_words)
         pos_counts.append(pos)
         neg_counts.append(neg)
-        
+    
+    df = df.copy()
     df['pos_count'] = pos_counts
     df['neg_count'] = neg_counts
     
