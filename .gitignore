@@ -1,11 +1,32 @@
+# Python Environments & Cache
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment Variables
 .env
+.env.*
+
+# Project Specific (Scraping & Local DB)
 accounts.db
 accounts.txt
-data/processed
-*.ipynb_checkpoints/
+cookies.txt
+twitter_auth.json
+
+# Data & Models (Do not commit large data/models to git)
+data/raw/
+data/processed/
 results/
-.python-version
 report/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# UV / Build / IDE
+.python-version
+.vscode/
+.idea/
+*.swp
