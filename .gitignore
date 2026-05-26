@@ -17,7 +17,6 @@ twitter_auth.json
 
 # Data & Models (Do not commit large data/models to git)
 data/raw/
-data/processed/
 results/
 report/
 
