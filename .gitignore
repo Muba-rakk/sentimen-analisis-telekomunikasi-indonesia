@@ -9,14 +9,14 @@ __pycache__/
 .env
 .env.*
 
-# Project Specific (Scraping & Local DB)
+# Project Specific
 accounts.db
 accounts.txt
 cookies.txt
 twitter_auth.json
 
-# Data & Models (Do not commit large data/models to git)
-data/raw/
+# Data & Models
+data/processed/
 results/
 report/
 
@@ -29,3 +29,6 @@ report/
 .vscode/
 .idea/
 *.swp
+
+# Docs
+docs/
