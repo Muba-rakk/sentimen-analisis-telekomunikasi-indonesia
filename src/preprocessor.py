@@ -1,53 +1,66 @@
 import re
+import pandas as pd
+from tqdm import tqdm
 import nltk
 from nltk.corpus import stopwords
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-from tqdm import tqdm
-import pandas as pd
-from src.config import TWITTER_STOPWORDS
+from src.config import TWITTER_STOPWORDS, SLANG_DICT
 
-stemmer = StemmerFactory().create_stemmer()
+# Inisialisasi Stemmer Sastrawi
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
 
+# Inisialisasi Stopwords NLTK (Indonesian) + Custom
 try:
     nltk.data.find('corpora/stopwords')
 except LookupError:
-    nltk.download('stopwords', quiet=True, raise_on_error=False)
+    nltk.download('stopwords', quiet=True)
 
-STOP_WORDS = set(stopwords.words('indonesian'))
-STOP_WORDS.update(TWITTER_STOPWORDS)
+stop_words = set(stopwords.words('indonesian'))
+stop_words.update(TWITTER_STOPWORDS)
 
 def clean_text(text: str) -> str:
     text = str(text).lower()
-    # Remove URLs
-    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
-    # Remove mentions
+    # Hapus URL
+    text = re.sub(r'http\S+|www\S+', '', text, flags=re.MULTILINE)
+    # Hapus mention
     text = re.sub(r'@\w+', '', text)
-    # Remove hashtags
+    # Hapus hashtag
     text = re.sub(r'#\w+', '', text)
-    # Remove non-alpha chars (keep only letters and spaces)
+    # Hapus emoji dan tanda baca dengan hanya menyisakan huruf abjad dan spasi
     text = re.sub(r'[^a-z\s]', ' ', text)
-    # Remove extra whitespace
+    # Hapus spasi berlebih
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-def tokenize(text: str) -> list[str]:
-    return text.lower().split()
+def remove_stopwords(text: str) -> str:
+    tokens = text.split()
+    filtered_tokens = [w for w in tokens if w not in stop_words]
+    return " ".join(filtered_tokens)
 
-def remove_stopwords(tokens: list[str]) -> list[str]:
-    return [word for word in tokens if word not in STOP_WORDS]
+def normalize_slang(text: str) -> str:
+    tokens = text.split()
+    normalized = [SLANG_DICT.get(w, w) for w in tokens]
+    return " ".join(normalized)
 
-def stem(tokens: list[str]) -> list[str]:
-    return [stemmer.stem(word) for word in tokens]
+def apply_stemming(text: str) -> str:
+    return stemmer.stem(text)
 
 def run_preprocessing_pipeline(df: pd.DataFrame) -> pd.DataFrame:
-    tqdm.pandas(desc="Preprocessing")
+    tqdm.pandas(desc="Preprocessing (Clean -> Stopwords -> Stemming)")
     
-    def process(text):
-        cleaned = clean_text(text)
-        tokens = tokenize(cleaned)
-        filtered_tokens = remove_stopwords(tokens)
-        stemmed_tokens = stem(filtered_tokens)
-        return " ".join(stemmed_tokens)
+    def process_row(text):
+        text = clean_text(text)
+        text = normalize_slang(text)
+        text = remove_stopwords(text)
+        text = apply_stemming(text)
+        return text
+        
+    df['tweet_processed'] = df['tweet_raw'].progress_apply(process_row)
     
-    df['tweet_processed'] = df['tweet_raw'].progress_apply(process)
+    # Filter data kosong setelah dibersihkan
+    before = len(df)
+    df = df[df['tweet_processed'].str.strip() != ''].reset_index(drop=True)
+    print(f"[filter_empty] Dropped {before - len(df)} tweets that became empty after preprocessing")
+    
     return df
